@@ -40,7 +40,12 @@ def main():
         for (question, answer) in zip(questions, response):
 
           # TODO: this processing scheme is retarded.
-          output_list.append("h3. %s\n%s" % (question, answer))
+          # UPDATE: this scheme looks better but did not get rid of the urls, suggestions?
+          theQuestion = question
+          theAnswer = answer
+          splitQuestion = question.rsplit(',')
+          splitAnswer = answer.rsplit(',')
+          output_list.append("%s\n%s\n" % (splitQuestion, splitAnswer))
 
         output_file.write('\n'.join(output_list))
 
