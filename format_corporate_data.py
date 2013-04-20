@@ -1,6 +1,6 @@
 #! python
 
-import csv, sys, os, codecs
+import csv, sys, os, codecs, re
 from unidecode import unidecode
 
 # this code is copied from the csv module documentation; it gives me a version that includes unicode support
@@ -19,6 +19,12 @@ def utf_8_encoder(unicode_csv_data):
 
 
 # My code
+
+# these constants tell us where the courses section of the survey begins
+# and where the next section begins (starting with extracurriculars)
+BEGIN_COURSES = 6
+BEGIN_MISC = 27
+
 def main():
  
     if len(sys.argv) != 2:
@@ -67,21 +73,51 @@ def main():
                     # force everything written to ascii
                     question = unidecode(question)
                     answer = unidecode(answer)
+
+                    # The portion of the code from here on is pretty ugly, as we're special
+                    # casing based on the different ranges of questions, and the organization
+                    # of the questions isn't clear until you look at either the survey or the
+                    # survey data.
                     
-                    # 6 to 27 = questions about the different subfields of courses;
+                    # for questions about the different subfields of courses,
                     # omit questions with empty responses
                     if not answer:
-                        if i in range(6,27):
+                        if i in range(BEGIN_COURSES, BEGIN_MISC):
                             continue
                         else:
                             answer = 'No response'
                     
-                    # 2 = full time / intern, #3 = desired degree programs,
-                    if i==2 or i == 3 or i in range(6,27):
-                        # note rsplit of an empty string is a list of an empty string.
-                        answer = ''.join(("* " + a + "\n") for a in answer.rsplit(', '))
+                    # insert the headers in the proper places
+                    if i == 0:
+                        output_list.append("h3. Basic Information:")
+                    elif i == BEGIN_COURSES:
+                        output_list.append("h3. Desired Courses:")
+                    elif i == BEGIN_MISC:
+                        output_list.append("h3. Miscellany:")
+                    
+                    # special treatment for the courses
+                    if i in range(BEGIN_COURSES, BEGIN_MISC):
+                        # note split of an empty string is a list of an empty string - this is
+                        # part of the reason for looking for falsey answers above.
                         
-                    output_list.append("h4. %s\n%s\n" % (question, answer))
+                        # Turns out one of the classes was CS 429 - Software Engineering II, ACP.
+                        # thus we look out for this case in the regex, since otherwise the comma throws
+                        # things off.
+                        processed_answers = []
+                        for a in re.split(r', (?!ACP)', answer):
+                            if a.count('-') == 2:
+                                # if there are two dashes, the second one separates the link.
+                                course, link = a.rsplit('-', 1)
+                                processed_answers.append("* [" + course + "|" + link +"]\n")
+                            else:
+                                processed_answers.append("* " + a +"\n")
+                        answer = ''.join(processed_answers)
+                    
+                    # beginning section drawn as a table; rest dumped as h5's & text
+                    if i < BEGIN_COURSES:
+                        output_list.append("|*%s*:| %s |" % (question, answer))
+                    else:
+                        output_list.append("h5. %s\n%s\n" % (question, answer))
 
                 output_file.write('\n'.join(output_list))
 
