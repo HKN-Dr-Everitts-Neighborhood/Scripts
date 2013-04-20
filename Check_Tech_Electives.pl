@@ -21,7 +21,7 @@ if (compare("test_filename","Current_Tech_Electives") == 0)
 }
 else
 {
-    system("rm Current_Tech_Electives");
+    system("mv Current_Tech_Electives old_tech_electives");
     system("mv test_filename Current_Tech_Electives");
 }
 
