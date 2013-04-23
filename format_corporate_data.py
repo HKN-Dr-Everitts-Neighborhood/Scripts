@@ -114,7 +114,9 @@ def main():
                         answer = ''.join(processed_answers)
                     
                     # beginning section drawn as a table; rest dumped as h5's & text
-                    if i < BEGIN_COURSES:
+                    if question == "Timestamp":
+			output_list.append("{div:class=hidden}Timestamp: %s{div}\n" % answer)
+		    elif i < BEGIN_COURSES:
                         output_list.append("|*%s*:| %s |" % (question, answer))
                     else:
                         output_list.append("h5. %s\n%s\n" % (question, answer))
