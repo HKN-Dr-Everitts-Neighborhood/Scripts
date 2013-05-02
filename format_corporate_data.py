@@ -108,7 +108,7 @@ def main():
                             if a.count('-') == 2:
                                 # if there are two dashes, the second one separates the link.
                                 course, link = a.rsplit('-', 1)
-                                processed_answers.append("* [" + course + "|" + link +"]\n")
+                                processed_answers.append("* [" + course.strip() + "|" + link +"]\n")
                             else:
                                 processed_answers.append("* " + a +"\n")
                         answer = ''.join(processed_answers)
