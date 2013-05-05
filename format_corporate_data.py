@@ -107,10 +107,7 @@ def main():
                         for a in re.split(r', (?!ACP)', answer):
                             if a.count('-') >= 2:
                                 # if there are two or more dashes, the last one separates the link.
-                                # only one dash = no link.
-                                if (a.count('-') > 2):
-                                    print output_filename
-                                
+                                # only one dash = no link.                                
                                 course, link = a.rsplit('-', 1)
                                 processed_answers.append("* [" + course.strip() + "|" + link +"]\n")
                             else:
