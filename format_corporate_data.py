@@ -105,8 +105,12 @@ def main():
                         # things off.
                         processed_answers = []
                         for a in re.split(r', (?!ACP)', answer):
-                            if a.count('-') == 2:
-                                # if there are two dashes, the second one separates the link.
+                            if a.count('-') >= 2:
+                                # if there are two or more dashes, the last one separates the link.
+                                # only one dash = no link.
+                                if (a.count('-') > 2):
+                                    print output_filename
+                                
                                 course, link = a.rsplit('-', 1)
                                 processed_answers.append("* [" + course.strip() + "|" + link +"]\n")
                             else:
@@ -115,8 +119,8 @@ def main():
                     
                     # beginning section drawn as a table; rest dumped as h5's & text
                     if question == "Timestamp":
-			output_list.append("{div:class=hidden}Timestamp: %s{div}\n" % answer)
-		    elif i < BEGIN_COURSES:
+                        output_list.append("{div:class=hidden}Timestamp: %s{div}\n" % answer)
+                    elif i < BEGIN_COURSES:
                         output_list.append("|*%s*:| %s |" % (question, answer))
                     else:
                         output_list.append("h5. %s\n%s\n" % (question, answer))
